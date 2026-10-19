@@ -1,0 +1,1102 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17365d">
+    <meta name="description"
+          content="Thư viện tài liệu sinh viên - Tra cứu, tìm kiếm và chia sẻ tài liệu học tập.">
+
+    <title>Thư viện tài liệu sinh viên</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        /* Bo cuc co ban, giu giao dien dep ngay ca khi CSS ngoai loi */
+        :root {
+            --navy: #17365d;
+            --blue: #2563a6;
+            --light-blue: #edf4ff;
+            --border: #dce6f3;
+            --text: #23344d;
+            --muted: #6b7c93;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: #f6f9fd;
+            color: var(--text);
+            font-family: "Segoe UI", Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button,
+        a,
+        input,
+        select {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .site-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-container {
+            max-width: 1180px;
+            margin: auto;
+            min-height: 82px;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            background: var(--navy);
+            color: white;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 19px;
+        }
+
+        .brand-name {
+            display: block;
+            font-weight: 800;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        .brand-tagline {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #52647d;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--blue);
+        }
+
+        .nav-account {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 17px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: white;
+            color: var(--navy);
+            cursor: pointer;
+            font-weight: 650;
+            font-size: 14px;
+            transition: .2s ease;
+        }
+
+        .button:hover {
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        .button-primary {
+            color: white;
+            background: var(--blue);
+            border-color: var(--blue);
+        }
+
+        .button-primary:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+        .button-logout {
+            padding: 7px 11px;
+        }
+
+        .hero {
+            background:
+                radial-gradient(circle at 80% 30%, #dceaff 0, transparent 35%),
+                linear-gradient(135deg, #f7faff, #eaf2ff);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-inner {
+            max-width: 1180px;
+            margin: auto;
+            padding: 72px 24px 68px;
+            display: grid;
+            grid-template-columns: 1.3fr .7fr;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            max-width: 700px;
+            margin: 15px 0;
+            color: var(--navy);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(35px, 4.5vw, 56px);
+            line-height: 1.13;
+            letter-spacing: -.7px;
+        }
+
+        .hero h1 span {
+            color: var(--blue);
+        }
+
+        .hero-description {
+            max-width: 620px;
+            color: var(--muted);
+            margin-bottom: 25px;
+        }
+
+        .search-form {
+            max-width: 690px;
+            padding: 7px;
+            display: flex;
+            gap: 8px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            box-shadow: 0 8px 25px #17365d0b;
+        }
+
+        .search-form input {
+            min-width: 0;
+            flex: 1;
+            border: 0;
+            outline: none;
+            padding: 11px 12px;
+            background: transparent;
+            color: var(--text);
+        }
+
+        .search-form input:focus {
+            box-shadow: inset 0 0 0 1px #b7d0f4;
+            border-radius: 7px;
+        }
+
+        .hero-points {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-top: 19px;
+            color: #60758f;
+            font-size: 13px;
+        }
+
+        .hero-points span::before {
+            content: "✓";
+            margin-right: 7px;
+            color: #159578;
+            font-weight: 800;
+        }
+
+        .hero-art {
+            min-height: 280px;
+            display: grid;
+            place-items: center;
+        }
+
+        .knowledge-circle {
+            width: min(270px, 100%);
+            aspect-ratio: 1;
+            border: 1px solid #c8daf4;
+            border-radius: 50%;
+            background: #e0ecfc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .book {
+            width: 145px;
+            padding: 11px 15px;
+            border-radius: 5px;
+            box-shadow: 0 5px 12px #17365d20;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transform: rotate(-4deg);
+        }
+
+        .book-one { background: #17365d; }
+        .book-two { background: #4779b7; transform: rotate(-1deg); }
+        .book-three { background: #d4a354; transform: rotate(-4deg); }
+
+        .art-caption {
+            margin-top: 7px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--navy);
+        }
+
+        .stats {
+            background: white;
+        }
+
+        .stats-inner {
+            max-width: 1180px;
+            margin: auto;
+            padding: 25px 24px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .stat {
+            padding: 7px 22px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .stat:last-child {
+            border-right: 0;
+        }
+
+        .stat-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--light-blue);
+            color: var(--blue);
+            font-size: 20px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 21px;
+            color: var(--navy);
+            line-height: 1.3;
+        }
+
+        .stat small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .section {
+            max-width: 1180px;
+            margin: auto;
+            padding: 55px 24px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            margin: 7px 0 5px;
+            color: var(--navy);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 30px;
+        }
+
+        .section-heading p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .category-card {
+            display: block;
+            padding: 21px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: .2s ease;
+        }
+
+        .category-card:hover {
+            border-color: #8fb4e8;
+            box-shadow: 0 8px 22px #17365d0b;
+            transform: translateY(-3px);
+        }
+
+        .category-icon {
+            width: 39px;
+            height: 39px;
+            margin-bottom: 14px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: var(--light-blue);
+            color: var(--blue);
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .category-card strong {
+            display: block;
+            color: var(--navy);
+            margin-bottom: 5px;
+        }
+
+        .category-card small {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .documents-section {
+            max-width: none;
+            background: #f0f5fb;
+            border-top: 1px solid #e2eaf4;
+            border-bottom: 1px solid #e2eaf4;
+        }
+
+        .documents-inner {
+            max-width: 1180px;
+            margin: auto;
+            padding: 55px 24px;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .document-card {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: .2s ease;
+        }
+
+        .document-card:hover {
+            box-shadow: 0 10px 25px #17365d12;
+            transform: translateY(-3px);
+        }
+
+        .document-cover {
+            min-height: 145px;
+            padding: 17px;
+            background: linear-gradient(135deg, #e1edff, #f2f6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .document-cover.db { background: linear-gradient(135deg, #eee6ff, #f8f5ff); }
+        .document-cover.nw { background: linear-gradient(135deg, #ddf2ed, #f1fbf8); }
+        .document-cover.rs { background: linear-gradient(135deg, #f9ead8, #fff8ef); }
+
+        .file-type {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 7px;
+            background: #ffffffd9;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            color: var(--navy);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .document-monogram {
+            width: 65px;
+            height: 78px;
+            display: grid;
+            place-items: center;
+            background: white;
+            border-left: 4px solid #4779b7;
+            box-shadow: 0 7px 18px #17365d12;
+            color: var(--blue);
+            font-family: Georgia, serif;
+            font-size: 23px;
+            font-weight: 800;
+        }
+
+        .document-body {
+            padding: 17px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .document-category {
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 750;
+            margin-bottom: 8px;
+        }
+
+        .document-body h3 {
+            margin: 0 0 9px;
+            color: var(--navy);
+            font-size: 16px;
+            line-height: 1.45;
+        }
+
+        .document-description {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0 0 20px;
+        }
+
+        .document-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding-top: 12px;
+            margin-top: auto;
+            border-top: 1px solid #edf1f6;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .document-action {
+            display: block;
+            margin-top: 13px;
+            text-align: center;
+        }
+
+        .document-action .button {
+            width: 100%;
+        }
+
+        .empty-state {
+            padding: 35px 20px;
+            text-align: center;
+            background: white;
+            border: 1px dashed #b9cce5;
+            border-radius: 12px;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 8px;
+            color: var(--navy);
+        }
+
+        .empty-state p {
+            color: var(--muted);
+        }
+
+        .about-section {
+            padding-top: 45px;
+            padding-bottom: 50px;
+        }
+
+        .about-card {
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: #f7faff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .about-logo {
+            width: 65px;
+            height: 65px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--navy);
+            color: white;
+            font-weight: 800;
+            font-size: 22px;
+        }
+
+        .about-card h2 {
+            margin: 6px 0;
+            color: var(--navy);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 27px;
+        }
+
+        .about-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .site-footer {
+            background: #122e50;
+            color: #dce8f8;
+        }
+
+        .footer-inner {
+            max-width: 1180px;
+            margin: auto;
+            padding: 35px 24px;
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .footer-inner strong {
+            display: block;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .footer-inner p {
+            margin: 0;
+            font-size: 13px;
+            color: #bdcde2;
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        .copyright {
+            padding: 15px 24px;
+            border-top: 1px solid #ffffff20;
+            text-align: center;
+            color: #bdcde2;
+            font-size: 12px;
+        }
+
+        .account-name {
+            color: var(--navy);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .account-role {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        @media (max-width: 900px) {
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                gap: 18px;
+            }
+
+            .hero-inner {
+                grid-template-columns: 1fr .65fr;
+                gap: 20px;
+                padding-top: 55px;
+            }
+
+            .category-grid,
+            .document-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .stat {
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-container {
+                padding: 12px 16px;
+                gap: 14px;
+            }
+
+            .brand-logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .brand-name {
+                font-size: 12px;
+            }
+
+            .nav-links {
+                justify-content: flex-start;
+                gap: 15px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .nav-account {
+                margin-left: auto;
+            }
+
+            .hero-inner {
+                grid-template-columns: 1fr;
+                padding: 43px 18px;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+
+            .hero-art {
+                min-height: 220px;
+            }
+
+            .knowledge-circle {
+                width: 220px;
+            }
+
+            .stats-inner {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                padding: 16px 10px;
+            }
+
+            .stat {
+                border-right: 0;
+                padding: 12px 8px;
+            }
+
+            .stat strong {
+                font-size: 18px;
+            }
+
+            .section,
+            .documents-inner {
+                padding: 38px 16px;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .section-heading h2 {
+                font-size: 26px;
+            }
+
+            .category-grid,
+            .document-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-card {
+                padding: 17px;
+            }
+
+            .document-cover {
+                min-height: 125px;
+            }
+
+            .about-card {
+                padding: 22px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .about-card h2 {
+                font-size: 24px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                padding: 28px 18px;
+            }
+
+            .footer-right {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- THANH DIEU HUONG -->
+    <header class="site-header">
+        <div class="nav-container">
+            <a class="brand" href="{{ url_for('home') }}" aria-label="Trang chủ">
+                <span class="brand-logo">TV</span>
+                <span>
+                    <span class="brand-name">THƯ VIỆN SINH VIÊN</span>
+                    <span class="brand-tagline">Knowledge for Everyone</span>
+                </span>
+            </a>
+
+            <nav class="nav-links" aria-label="Điều hướng chính">
+                <a class="active" href="{{ url_for('home') }}">Trang chủ</a>
+                <a href="#danh-muc">Danh mục</a>
+                <a href="#tai-lieu">Tài liệu</a>
+                <a href="#gioi-thieu">Giới thiệu</a>
+            </nav>
+
+            <div class="nav-account">
+                {% if session.get('user_id') %}
+                    <div>
+                        <div class="account-name">
+                            {{ session.get('full_name', session.get('username')) }}
+                        </div>
+                        <div class="account-role">
+                            {% if session.get('role') == 'admin' %}
+                                Quản trị viên
+                            {% elif session.get('role') == 'lecturer' %}
+                                Giảng viên
+                            {% else %}
+                                Sinh viên
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <a class="button" href="{{ url_for('account') }}">Tài khoản</a>
+
+                    {% if session.get('role') == 'admin' %}
+                        <a class="button" href="{{ url_for('admin_page') }}">Quản trị</a>
+                    {% elif session.get('role') == 'lecturer' %}
+                        <a class="button" href="{{ url_for('lecturer_page') }}">Giảng viên</a>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('logout') }}">
+                        <button class="button button-logout" type="submit">
+                            Đăng xuất
+                        </button>
+                    </form>
+                {% else %}
+                    <a class="button" href="{{ url_for('login') }}">Đăng nhập</a>
+                    <a class="button button-primary"
+                       href="{{ url_for('register') }}">Đăng ký</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- KHU VUC GIOI THIEU -->
+        <section class="hero">
+            <div class="hero-inner">
+                <div>
+                    <div class="eyebrow">Không gian tri thức học đường</div>
+
+                    <h1>
+                        Tri thức hôm nay,<br>
+                        <span>thành công ngày mai.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Khám phá, tra cứu và chia sẻ tài liệu học tập
+                        trong một không gian tri thức dành cho sinh viên.
+                    </p>
+
+                    <form class="search-form" method="GET"
+                          action="{{ url_for('home') }}"
+                          role="search">
+                        <input
+                            type="search"
+                            name="q"
+                            value="{{ keyword }}"
+                            placeholder="Tìm giáo trình, bài giảng, đề thi..."
+                            aria-label="Từ khóa tìm kiếm">
+
+                        {% if selected_category %}
+                            <input type="hidden" name="category"
+                                   value="{{ selected_category }}">
+                        {% endif %}
+
+                        <button class="button button-primary" type="submit">
+                            Tìm kiếm
+                        </button>
+                    </form>
+
+                    <div class="hero-points">
+                        <span>Tra cứu dễ dàng</span>
+                        <span>Phân loại khoa học</span>
+                        <span>Chia sẻ tri thức</span>
+                    </div>
+                </div>
+
+                <div class="hero-art" aria-label="Minh họa tri thức">
+                    <div class="knowledge-circle">
+                        <div class="book book-one">TRI THỨC</div>
+                        <div class="book book-two">HỌC TẬP</div>
+                        <div class="book book-three">TƯƠNG LAI</div>
+                        <div class="art-caption">
+                            <strong>Học tập không giới hạn</strong><br>
+                            Kết nối nguồn tài liệu hữu ích
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THONG KE -->
+        <section class="stats" aria-label="Thống kê thư viện">
+            <div class="stats-inner">
+                <div class="stat">
+                    <div class="stat-icon" aria-hidden="true">▤</div>
+                    <div>
+                        <strong>{{ total_documents }}</strong>
+                        <small>Tài liệu mẫu</small>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon" aria-hidden="true">⌕</div>
+                    <div>
+                        <strong>{{ categories|length }}</strong>
+                        <small>Nhóm chủ đề</small>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon" aria-hidden="true">◎</div>
+                    <div>
+                        <strong>3</strong>
+                        <small>Vai trò dự kiến</small>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon" aria-hidden="true">☆</div>
+                    <div>
+                        <strong>24/7</strong>
+                        <small>Tra cứu trực tuyến</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DANH MUC -->
+        <section class="section" id="danh-muc">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">Khám phá tri thức</div>
+                    <h2>Danh mục tài liệu</h2>
+                    <p>Lựa chọn chủ đề phù hợp với nhu cầu học tập.</p>
+                </div>
+
+                {% if selected_category or keyword %}
+                    <a class="button" href="{{ url_for('home') }}">
+                        Xóa bộ lọc
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="category-grid">
+                {% for category_item in categories %}
+                    <a class="category-card"
+                       href="{{ url_for('home', category=category_item) }}">
+                        <span class="category-icon">
+                            {% if 'Lap trinh' in category_item %}
+                                PY
+                            {% elif 'Co so du lieu' in category_item %}
+                                DB
+                            {% elif 'Mang may tinh' in category_item %}
+                                NW
+                            {% else %}
+                                RS
+                            {% endif %}
+                        </span>
+
+                        <strong>{{ category_item }}</strong>
+                        <small>Khám phá tài liệu theo chủ đề</small>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- DANH SACH TAI LIEU -->
+        <section class="documents-section" id="tai-lieu">
+            <div class="documents-inner">
+                <div class="section-heading">
+                    <div>
+                        <div class="eyebrow">Nguồn học liệu</div>
+                        <h2>
+                            {% if keyword or selected_category %}
+                                Kết quả tìm kiếm
+                            {% else %}
+                                Tài liệu tham khảo
+                            {% endif %}
+                        </h2>
+                        <p>
+                            Tìm thấy {{ documents|length }} tài liệu trong danh sách hiện tại.
+                        </p>
+                    </div>
+                </div>
+
+                {% if documents %}
+                    <div class="document-grid">
+                        {% for doc in documents %}
+                            <article class="document-card">
+                                <div class="document-cover
+                                    {% if doc.icon == 'DB' %}db
+                                    {% elif doc.icon == 'NW' %}nw
+                                    {% elif doc.icon == 'RS' %}rs
+                                    {% endif %}">
+
+                                    <span class="file-type">
+                                        {{ doc.format }}
+                                    </span>
+
+                                    <span class="document-monogram">
+                                        {{ doc.icon }}
+                                    </span>
+                                </div>
+
+                                <div class="document-body">
+                                    <div class="document-category">
+                                        {{ doc.category }}
+                                    </div>
+
+                                    <h3>{{ doc.title }}</h3>
+
+                                    <p class="document-description">
+                                        {{ doc.description }}
+                                    </p>
+
+                                    <div class="document-meta">
+                                        <span>{{ doc.faculty }}</span>
+                                        <span>{{ doc.downloads }} lượt tham khảo</span>
+                                    </div>
+
+                                    <div class="document-action">
+                                        <a class="button"
+                                           href="{{ url_for('login') if not session.get('user_id') else '#tai-lieu' }}">
+                                            {% if session.get('user_id') %}
+                                                Xem tài liệu
+                                            {% else %}
+                                                Đăng nhập để tiếp tục
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>Không tìm thấy tài liệu phù hợp</h3>
+                        <p>
+                            Hãy thử từ khóa khác hoặc chọn lại danh mục.
+                        </p>
+                        <a class="button button-primary"
+                           href="{{ url_for('home') }}">
+                            Xem tất cả tài liệu
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- GIOI THIEU DU AN -->
+        <section class="section about-section" id="gioi-thieu">
+            <div class="about-card">
+                <div class="about-logo">TV</div>
+
+                <div>
+                    <div class="eyebrow">Về dự án</div>
+                    <h2>Chia sẻ tri thức, kết nối sinh viên</h2>
+                    <p>
+                        Website hướng đến việc tổ chức tài liệu học tập
+                        theo khoa, ngành, khóa và lớp, giúp người học
+                        tìm kiếm nguồn tham khảo thuận tiện hơn.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CHAN TRANG -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div>
+                <strong>THƯ VIỆN TÀI LIỆU SINH VIÊN</strong>
+                <p>Nền tảng chia sẻ học liệu phục vụ học tập.</p>
+            </div>
+
+            <div class="footer-right">
+                <p>Đồ án mã nguồn mở</p>
+                <p>Phát triển bằng Python và Flask</p>
+            </div>
+        </div>
+
+        <div class="copyright">
+            © 2026 Thư viện tài liệu sinh viên · Phiên bản thử nghiệm
+        </div>
+    </footer>
+</body>
+</html>

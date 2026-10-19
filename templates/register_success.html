@@ -1,0 +1,20 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng ký thành công</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container"
+          style="max-width: 600px; padding-top: 80px;">
+        <h1>Đăng ký thành công!</h1>
+        <p>Tài khoản <strong>{{ username }}</strong> đã được tạo.</p>
+        <p>Vai trò mặc định: Sinh viên.</p>
+        <a href="/">Quay về trang chủ</a>
+    </main>
+</body>
+</html>

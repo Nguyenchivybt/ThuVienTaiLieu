@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản | Thư viện tài liệu sinh viên</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f6f9;
+            color: #263238;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 18px 6%;
+            background: #174ea6;
+            color: #fff;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .container {
+            width: calc(100% - 30px);
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
+        }
+
+        .header {
+            padding-bottom: 22px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e8edf2;
+        }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 75px;
+            height: 75px;
+            margin-bottom: 18px;
+            border-radius: 50%;
+            background: #e8f0fe;
+            font-size: 36px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            color: #174ea6;
+            font-size: 27px;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: #667085;
+            line-height: 1.6;
+        }
+
+        .account-row {
+            display: flex;
+            gap: 15px;
+            padding: 17px 0;
+            border-bottom: 1px solid #edf0f4;
+            line-height: 1.6;
+        }
+
+        .label {
+            flex: 0 0 180px;
+            color: #475467;
+            font-weight: 600;
+        }
+
+        .value {
+            flex: 1;
+            overflow-wrap: anywhere;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: #e8f0fe;
+            color: #174ea6;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .active-badge {
+            background: #e7f6ec;
+            color: #187443;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 7px;
+            background: #1769aa;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #124e80;
+        }
+
+        .btn-secondary {
+            background: #667085;
+        }
+
+        .btn-secondary:hover {
+            background: #475467;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 7px;
+            background: #e8f0fe;
+            color: #174ea6;
+            overflow-wrap: anywhere;
+        }
+
+        .empty-state {
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff4e5;
+            color: #8a4b08;
+            line-height: 1.6;
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: #667085;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 16px 20px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .account-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .label {
+                flex-basis: auto;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <h2>📚 Thư viện tài liệu sinh viên</h2>
+        <a href="{{ url_for('home') }}">← Trang chủ</a>
+    </nav>
+
+    <main class="container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        {% if current_user %}
+
+            <section class="header">
+                <div class="avatar">👤</div>
+
+                <h1>Thông tin tài khoản</h1>
+
+                <p class="subtitle">
+                    Thông tin cá nhân và quyền sử dụng hệ thống
+                    thư viện tài liệu.
+                </p>
+            </section>
+
+            <section class="account-information">
+
+                <div class="account-row">
+                    <div class="label">Họ và tên</div>
+                    <div class="value">
+                        {{ current_user['full_name'] or 'Chưa cập nhật' }}
+                    </div>
+                </div>
+
+                <div class="account-row">
+                    <div class="label">Email</div>
+                    <div class="value">
+                        {{ current_user['email'] or 'Chưa cập nhật' }}
+                    </div>
+                </div>
+
+                <div class="account-row">
+                    <div class="label">Tên đăng nhập</div>
+                    <div class="value">
+                        {{ current_user['username'] or 'Chưa cập nhật' }}
+                    </div>
+                </div>
+
+                <div class="account-row">
+                    <div class="label">Vai trò</div>
+                    <div class="value">
+                        <span class="badge">
+                            {% if current_user['role'] == 'admin' %}
+                                Quản trị viên
+                            {% elif current_user['role'] == 'lecturer' %}
+                                Giảng viên
+                            {% else %}
+                                Sinh viên
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="account-row">
+                    <div class="label">Trạng thái</div>
+                    <div class="value">
+                        <span class="badge active-badge">
+                            Đang hoạt động
+                        </span>
+                    </div>
+                </div>
+
+                <div class="account-row">
+                    <div class="label">Ngày tạo tài khoản</div>
+                    <div class="value">
+                        {{ current_user['created_at'] or 'Chưa cập nhật' }}
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="actions">
+
+                <a class="btn" href="{{ url_for('home') }}">
+                    🏠 Trang chủ
+                </a>
+
+                {% if current_user['role'] == 'admin' %}
+                    <a class="btn" href="{{ url_for('admin_page') }}">
+                        ⚙️ Quản trị hệ thống
+                    </a>
+                {% endif %}
+
+                {% if current_user['role'] in ['admin', 'lecturer'] %}
+                    <a class="btn"
+                       href="{{ url_for('manage_documents') }}">
+                        📁 Quản lý tài liệu
+                    </a>
+                {% endif %}
+
+                <form action="{{ url_for('logout') }}"
+                      method="POST"
+                      style="display: inline; margin: 0;">
+
+                    <button class="btn btn-secondary" type="submit">
+                        🚪 Đăng xuất
+                    </button>
+                </form>
+
+            </section>
+
+        {% else %}
+
+            <section class="empty-state">
+                <h3>Không tìm thấy tài khoản</h3>
+
+                <p>
+                    Phiên đăng nhập có thể đã hết hạn.
+                    Vui lòng đăng nhập lại để tiếp tục sử dụng hệ thống.
+                </p>
+
+                <a class="btn" href="{{ url_for('login') }}">
+                    Đăng nhập
+                </a>
+            </section>
+
+        {% endif %}
+
+    </main>
+
+    <footer>
+        © Thư viện tài liệu sinh viên
+    </footer>
+
+</body>
+</html>

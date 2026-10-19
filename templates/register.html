@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Đăng ký tài khoản | Thư viện sinh viên</title>
+
+    <meta name="description"
+          content="Đăng ký tài khoản thư viện tài liệu sinh viên.">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="register-body">
+
+    <main class="register-page">
+        <section class="register-card">
+
+            <a href="/" class="register-brand">
+                <span class="register-logo">TV</span>
+                <span class="register-brand-text">
+                    <strong>THƯ VIỆN SINH VIÊN</strong>
+                    <small>Knowledge for Everyone</small>
+                </span>
+            </a>
+
+            <div class="register-heading">
+                <span class="register-eyebrow">
+                    KHÔNG GIAN TRI THỨC HỌC ĐƯỜNG
+                </span>
+
+                <h1>Tạo tài khoản</h1>
+
+                <p>
+                    Tham gia thư viện tri thức dành cho sinh viên.
+                    Khám phá và chia sẻ tài liệu học tập thuận tiện hơn.
+                </p>
+            </div>
+
+            {% if error %}
+                <div class="register-error" role="alert">
+                    <span aria-hidden="true">!</span>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+
+            <form method="POST"
+                  action="{{ url_for('register') }}"
+                  class="register-form">
+
+                <div class="register-field">
+                    <label for="full_name">Họ và tên</label>
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        placeholder="Nhập họ và tên của bạn"
+                        autocomplete="name"
+                        maxlength="100"
+                        required
+                        value="{{ request.form.get('full_name', '') }}">
+                </div>
+
+                <div class="register-field">
+                    <label for="email">Địa chỉ email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="vidu@email.com"
+                        autocomplete="email"
+                        maxlength="254"
+                        required
+                        value="{{ request.form.get('email', '') }}">
+                </div>
+
+                <div class="register-field">
+                    <label for="username">Tên đăng nhập</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Ví dụ: sinhvien2026"
+                        autocomplete="username"
+                        minlength="4"
+                        maxlength="30"
+                        pattern="[A-Za-z0-9_]+"
+                        title="Sử dụng chữ không dấu, số và dấu gạch dưới; từ 4 đến 30 ký tự."
+                        required
+                        value="{{ request.form.get('username', '') }}">
+
+                    <small>
+                        Từ 4–30 ký tự, gồm chữ không dấu, số hoặc dấu _.
+                    </small>
+                </div>
+
+                <div class="register-field">
+                    <label for="password">Mật khẩu</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Nhập mật khẩu"
+                        autocomplete="new-password"
+                        minlength="8"
+                        maxlength="128"
+                        required>
+
+                    <small>Mật khẩu phải có ít nhất 8 ký tự.</small>
+                </div>
+
+                <div class="register-field">
+                    <label for="confirm_password">
+                        Xác nhận mật khẩu
+                    </label>
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        placeholder="Nhập lại mật khẩu"
+                        autocomplete="new-password"
+                        minlength="8"
+                        maxlength="128"
+                        required>
+                </div>
+
+                <button type="submit" class="register-submit">
+                    Tạo tài khoản
+                    <span aria-hidden="true">→</span>
+                </button>
+
+                <p class="register-note">
+                    Khi đăng ký, tài khoản sẽ được tạo với vai trò
+                    <strong>Sinh viên</strong>.
+                </p>
+            </form>
+
+            <div class="register-divider">
+                <span></span>
+                <small>ĐÃ CÓ TÀI KHOẢN?</small>
+                <span></span>
+            </div>
+
+            <a href="{{ url_for('home') }}" class="register-login-link">
+                ← Quay về trang chủ
+            </a>
+
+        </section>
+
+        <footer class="register-footer">
+            © 2026 Thư viện tài liệu sinh viên
+            <span>·</span>
+            Nền tảng chia sẻ học liệu phục vụ học tập
+        </footer>
+    </main>
+
+    <script>
+        const password = document.getElementById("password");
+        const confirmPassword =
+            document.getElementById("confirm_password");
+
+        function validatePasswordMatch() {
+            if (confirmPassword.value &&
+                password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity(
+                    "Mật khẩu nhập lại không khớp."
+                );
+            } else {
+                confirmPassword.setCustomValidity("");
+            }
+        }
+
+        password.addEventListener("input", validatePasswordMatch);
+        confirmPassword.addEventListener("input", validatePasswordMatch);
+    </script>
+
+</body>
+</html>

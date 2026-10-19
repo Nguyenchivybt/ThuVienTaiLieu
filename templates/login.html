@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | Thư viện sinh viên</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="register-body">
+    <main class="register-page">
+        <section class="register-card">
+            <a href="/" class="register-brand">
+                <span class="register-logo">TV</span>
+                <span class="register-brand-text">
+                    <strong>THƯ VIỆN SINH VIÊN</strong>
+                    <small>Knowledge for Everyone</small>
+                </span>
+            </a>
+
+            <div class="register-heading">
+                <span class="register-eyebrow">CHÀO MỪNG BẠN TRỞ LẠI</span>
+                <h1>Đăng nhập</h1>
+                <p>Đăng nhập để tiếp tục sử dụng thư viện tài liệu.</p>
+            </div>
+
+            {% if error %}
+            <div class="register-error" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}" class="register-form">
+                <div class="register-field">
+                    <label for="username">Tên đăng nhập</label>
+                    <input id="username" name="username"
+                           autocomplete="username" required
+                           placeholder="Nhập tên đăng nhập">
+                </div>
+
+                <div class="register-field">
+                    <label for="password">Mật khẩu</label>
+                    <input id="password" name="password" type="password"
+                           autocomplete="current-password" required
+                           placeholder="Nhập mật khẩu">
+                </div>
+
+                <button type="submit" class="register-submit">
+                    Đăng nhập →
+                </button>
+            </form>
+
+            <div class="register-divider">
+                <span></span>
+                <small>CHƯA CÓ TÀI KHOẢN?</small>
+                <span></span>
+            </div>
+
+            <a href="{{ url_for('register') }}" class="register-login-link">
+                Tạo tài khoản sinh viên
+            </a>
+
+            <a href="/" class="register-back">← Quay về trang chủ</a>
+        </section>
+
+        <footer class="register-footer">
+            © 2026 Thư viện tài liệu sinh viên
+        </footer>
+    </main>
+</body>
+</html>

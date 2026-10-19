@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý tài liệu | Thư viện sinh viên</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .dm { max-width: 1150px; margin: 30px auto; padding: 0 18px; }
+        .dm-card { background: white; border: 1px solid #dce4ee; border-radius: 14px; padding: 22px; margin: 20px 0; }
+        .dm-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 14px; }
+        .dm label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+        .dm input, .dm textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; width: 100%; box-sizing: border-box; }
+        .dm textarea { min-height: 75px; resize: vertical; }
+        .dm button, .dm .dm-link { border: 0; padding: 10px 14px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; font: inherit; }
+        .dm-primary { background: #1d4ed8; color: white; }
+        .dm-danger { background: #fee2e2; color: #b91c1c; }
+        .dm-neutral { background: #e2e8f0; color: #334155; }
+        .dm-search { display: flex; gap: 10px; margin-bottom: 15px; }
+        .dm-search input { flex: 1; }
+        .dm-table-wrap { overflow-x: auto; }
+        .dm table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .dm th, .dm td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+        .dm th { background: #f1f5f9; }
+        .dm-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .dm-flash { padding: 12px; border-radius: 8px; margin: 8px 0; background: #f1f5f9; }
+        .dm-flash.success { background: #dcfce7; color: #166534; }
+        .dm-flash.error { background: #fee2e2; color: #991b1b; }
+        .dm-flash.warning { background: #fef3c7; color: #92400e; }
+        .dm-muted { color: #64748b; font-size: 13px; }
+        .dm details { min-width: 190px; }
+        .dm summary { cursor: pointer; color: #1d4ed8; margin-bottom: 10px; }
+        .dm details form { display: grid; gap: 10px; }
+        @media (max-width: 600px) { .dm-card { padding: 14px; } .dm-search { flex-direction: column; } }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <div class="header-container">
+        <a href="{{ url_for('home') }}" class="brand">
+            <div class="brand-logo">TV</div>
+            <div class="brand-text">
+                <h2>THƯ VIỆN SINH VIÊN</h2>
+                <p>Quản lý tài liệu</p>
+            </div>
+        </a>
+        <nav class="main-nav">
+            <a href="{{ url_for('home') }}">Trang chủ</a>
+            {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin_page') }}">Quản trị tài khoản</a>
+            {% endif %}
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="dm-primary">Đăng xuất</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="dm">
+    <h1>Quản lý tài liệu</h1>
+    <p class="dm-muted">
+        Đăng tải PDF/DOCX tối đa 16 MB. Giảng viên chỉ quản lý tài liệu của mình.
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="dm-flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="dm-card">
+        <h2>➕ Đăng tải tài liệu</h2>
+        <form action="{{ url_for('upload_document') }}" method="POST"
+              enctype="multipart/form-data">
+            <div class="dm-grid">
+                <label>Tên tài liệu *
+                    <input name="title" maxlength="200" required>
+                </label>
+                <label>Khoa
+                    <input name="faculty" maxlength="200">
+                </label>
+                <label>Ngành
+                    <input name="major" maxlength="200">
+                </label>
+                <label>Khóa học
+                    <input name="cohort" maxlength="200" placeholder="Ví dụ: K2024">
+                </label>
+                <label>Lớp
+                    <input name="class_name" maxlength="200">
+                </label>
+                <label>Danh mục
+                    <input name="category" maxlength="200" placeholder="Ví dụ: Lập trình">
+                </label>
+                <label>File PDF hoặc DOCX *
+                    <input type="file" name="file" accept=".pdf,.docx"
+                           required>
+                </label>
+            </div>
+            <label style="margin-top:14px">Mô tả
+                <textarea name="description" maxlength="200"
+                          placeholder="Mô tả ngắn về tài liệu"></textarea>
+            </label>
+            <p><button type="submit" class="dm-primary">Đăng tải tài liệu</button></p>
+        </form>
+    </section>
+
+    <section class="dm-card">
+        <h2>📚 Danh sách tài liệu</h2>
+        <form action="{{ url_for('manage_documents') }}" method="GET" class="dm-search">
+            <input type="search" name="q" value="{{ keyword }}"
+                   placeholder="Tìm theo tên hoặc mô tả...">
+            <button class="dm-primary" type="submit">Tìm kiếm</button>
+            <a class="dm-link dm-neutral" href="{{ url_for('manage_documents') }}">Đặt lại</a>
+        </form>
+
+        <div class="dm-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tài liệu</th>
+                        <th>Phân loại</th>
+                        <th>Người đăng</th>
+                        <th>Lượt tải</th>
+                        <th>Ngày đăng</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>
+                            <strong>{{ doc.title }}</strong>
+                            <p class="dm-muted">{{ doc.description }}</p>
+                            <span>{{ doc.original_filename }}</span>
+                        </td>
+                        <td>
+                            {{ doc.file_format }}<br>
+                            {{ doc.category }}<br>
+                            {{ doc.faculty }}<br>
+                            {{ doc.major }}<br>
+                            {{ doc.cohort }} · {{ doc.class_name }}
+                        </td>
+                        <td>{{ doc.uploader_name }}</td>
+                        <td>{{ doc.downloads }}</td>
+                        <td>{{ doc.created_at }}</td>
+                        <td>
+                            <div class="dm-actions">
+                                <a class="dm-link dm-neutral"
+                                   href="{{ url_for('download_document', document_id=doc.id) }}">
+                                    Tải xuống
+                                </a>
+                            </div>
+
+                            <details style="margin-top:12px">
+                                <summary>Sửa tài liệu</summary>
+                                <form action="{{ url_for('edit_document', document_id=doc.id) }}"
+                                      method="POST" enctype="multipart/form-data">
+                                    <label>Tên tài liệu
+                                        <input name="title" maxlength="200"
+                                               value="{{ doc.title }}" required>
+                                    </label>
+                                    <label>Mô tả
+                                        <textarea name="description" maxlength="200">{{ doc.description }}</textarea>
+                                    </label>
+                                    <label>Khoa
+                                        <input name="faculty" maxlength="200"
+                                               value="{{ doc.faculty }}">
+                                    </label>
+                                    <label>Ngành
+                                        <input name="major" maxlength="200"
+                                               value="{{ doc.major }}">
+                                    </label>
+                                    <label>Khóa
+                                        <input name="cohort" maxlength="200"
+                                               value="{{ doc.cohort }}">
+                                    </label>
+                                    <label>Lớp
+                                        <input name="class_name" maxlength="200"
+                                               value="{{ doc.class_name }}">
+                                    </label>
+                                    <label>Danh mục
+                                        <input name="category" maxlength="200"
+                                               value="{{ doc.category }}">
+                                    </label>
+                                    <label>Thay file (không bắt buộc)
+                                        <input type="file" name="file" accept=".pdf,.docx">
+                                    </label>
+                                    <button class="dm-primary" type="submit">Lưu thay đổi</button>
+                                </form>
+                            </details>
+
+                            <form action="{{ url_for('delete_document', document_id=doc.id) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Xóa tài liệu này? Thao tác không thể hoàn tác.');"
+                                  style="margin-top:8px">
+                                <button type="submit" class="dm-danger">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">Chưa có tài liệu nào. Hãy đăng tải tài liệu đầu tiên.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <p>© 2026 Thư viện tài liệu sinh viên</p>
+</footer>
+</body>
+</html>

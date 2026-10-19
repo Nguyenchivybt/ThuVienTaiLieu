@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị tài khoản | Thư viện sinh viên</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .admin-container { max-width: 1200px; margin: 35px auto; padding: 0 20px; }
+        .admin-heading { margin-bottom: 25px; }
+        .admin-heading h1 { margin-bottom: 8px; }
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; margin: 24px 0; }
+        .admin-stat-card, .admin-panel { background: white; border: 1px solid #e1e7ef; border-radius: 14px; padding: 20px; }
+        .admin-stat-card p { color: #64748b; margin: 0 0 8px; }
+        .admin-stat-card h2 { margin: 0; color: #174ea6; }
+        .admin-panel { margin-bottom: 24px; overflow: hidden; }
+        .admin-panel h2 { margin-top: 0; }
+        .admin-toolbar, .admin-filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+        .admin-toolbar input, .admin-toolbar select, .admin-filters input, .admin-filters select,
+        .admin-form input, .admin-form select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; min-width: 0; }
+        .admin-toolbar input, .admin-filters input { flex: 1; }
+        .admin-form { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 14px; }
+        .admin-form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+        .admin-form button { align-self: end; }
+        .admin-table-wrapper { overflow-x: auto; }
+        .admin-table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        .admin-table th, .admin-table td { padding: 13px 12px; border-bottom: 1px solid #e5eaf1; text-align: left; vertical-align: middle; }
+        .admin-table th { background: #f1f5f9; color: #334155; }
+        .admin-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+        .admin-actions form { display: inline; }
+        .admin-actions button, .admin-actions a, .admin-button { border: 0; border-radius: 7px; padding: 8px 10px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 13px; }
+        .btn-edit { background: #dbeafe; color: #1d4ed8; }
+        .btn-lock { background: #fef3c7; color: #92400e; }
+        .btn-delete { background: #fee2e2; color: #b91c1c; }
+        .btn-add { background: #1d4ed8; color: white; padding: 10px 15px; border: 0; border-radius: 8px; cursor: pointer; }
+        .role-badge, .status-badge { display: inline-block; padding: 5px 9px; border-radius: 20px; font-size: 12px; white-space: nowrap; }
+        .role-admin { background: #ede9fe; color: #6d28d9; }
+        .role-lecturer { background: #dbeafe; color: #1d4ed8; }
+        .role-student { background: #dcfce7; color: #166534; }
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-locked { background: #fee2e2; color: #b91c1c; }
+        .admin-user-name { font-weight: 600; }
+        .admin-empty { text-align: center !important; padding: 30px !important; color: #64748b; }
+        .admin-welcome { color: #334155; }
+        .logout-form { display: inline; }
+        .admin-message { padding: 12px 15px; border-radius: 8px; margin: 10px 0; background: #f1f5f9; }
+        .admin-message.success { background: #dcfce7; color: #166534; }
+        .admin-message.error { background: #fee2e2; color: #991b1b; }
+        .admin-message.warning { background: #fef3c7; color: #92400e; }
+        .admin-muted { color: #64748b; font-size: 13px; }
+        .admin-modal { border: 0; border-radius: 14px; padding: 24px; width: min(650px, calc(100% - 30px)); }
+        .admin-modal::backdrop { background: rgb(15 23 42 / 55%); }
+        .admin-modal h2 { margin-top: 0; }
+        .admin-modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn-cancel { background: #e2e8f0; color: #334155; border: 0; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+        @media (max-width: 650px) {
+            .admin-container { margin: 20px auto; padding: 0 12px; }
+            .admin-panel { padding: 14px; }
+            .admin-toolbar, .admin-filters { align-items: stretch; flex-direction: column; }
+            .admin-toolbar input, .admin-toolbar select, .admin-filters input, .admin-filters select { width: 100%; box-sizing: border-box; }
+        }
+    </style>
+</head>
+
+<body>
+<header class="site-header">
+    <div class="header-container">
+        <a href="{{ url_for('home') }}" class="brand">
+            <div class="brand-logo">TV</div>
+            <div class="brand-text">
+                <h2>THƯ VIỆN SINH VIÊN</h2>
+                <p>Khu vực quản trị</p>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <span class="admin-welcome">
+                Xin chào, {{ current_user.full_name }}
+            </span>
+            <a href="{{ url_for('home') }}" class="btn btn-outline">Trang chủ</a>
+            <form action="{{ url_for('logout') }}" method="POST" class="logout-form">
+                <button type="submit" class="btn btn-primary">Đăng xuất</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="admin-container">
+    <section class="admin-heading">
+        <p class="admin-muted">QUẢN LÝ HỆ THỐNG</p>
+        <h1>Bảng điều khiển quản trị</h1>
+        <p>Quản lý tài khoản sinh viên, giảng viên và quản trị viên.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="admin-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <section class="admin-stats">
+        <article class="admin-stat-card">
+            <p>Tổng tài khoản</p>
+            <h2>{{ stats.total_users }}</h2>
+        </article>
+        <article class="admin-stat-card">
+            <p>Sinh viên</p>
+            <h2>{{ stats.students }}</h2>
+        </article>
+        <article class="admin-stat-card">
+            <p>Giảng viên</p>
+            <h2>{{ stats.lecturers }}</h2>
+        </article>
+        <article class="admin-stat-card">
+            <p>Quản trị viên</p>
+            <h2>{{ stats.admins }}</h2>
+        </article>
+        <article class="admin-stat-card">
+            <p>Tài khoản bị khóa</p>
+            <h2>{{ stats.locked_users }}</h2>
+        </article>
+    </section>
+
+    <section class="admin-panel">
+        <h2>➕ Thêm tài khoản</h2>
+        <p class="admin-muted">Mật khẩu phải có ít nhất 8 ký tự.</p>
+
+        <form action="{{ url_for('admin_add_user') }}" method="POST" class="admin-form">
+            <label>Họ và tên
+                <input type="text" name="full_name" maxlength="100" required>
+            </label>
+            <label>Email
+                <input type="email" name="email" maxlength="254" required>
+            </label>
+            <label>Tên đăng nhập
+                <input type="text" name="username" minlength="4" maxlength="30"
+                       pattern="[A-Za-z0-9_]+" required>
+            </label>
+            <label>Mật khẩu
+                <input type="password" name="password" minlength="8" required>
+            </label>
+            <label>Vai trò
+                <select name="role" required>
+                    <option value="student">Sinh viên</option>
+                    <option value="lecturer">Giảng viên</option>
+                    <option value="admin">Quản trị viên</option>
+                </select>
+            </label>
+            <button type="submit" class="btn-add">Tạo tài khoản</button>
+        </form>
+    </section>
+
+    <section class="admin-panel">
+        <h2>🔎 Danh sách tài khoản</h2>
+
+        <form action="{{ url_for('admin_page') }}" method="GET" class="admin-filters">
+            <input type="search" name="q" placeholder="Tìm theo tên, username, email..."
+                   value="{{ keyword }}">
+            <select name="role">
+                <option value="">Tất cả vai trò</option>
+                <option value="student" {% if role_filter == 'student' %}selected{% endif %}>Sinh viên</option>
+                <option value="lecturer" {% if role_filter == 'lecturer' %}selected{% endif %}>Giảng viên</option>
+                <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Quản trị viên</option>
+            </select>
+            <select name="status">
+                <option value="">Mọi trạng thái</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Đang hoạt động</option>
+                <option value="locked" {% if status_filter == 'locked' %}selected{% endif %}>Đã khóa</option>
+            </select>
+            <button type="submit" class="btn-add">Lọc</button>
+            <a href="{{ url_for('admin_page') }}" class="btn-cancel">Đặt lại</a>
+        </form>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Họ và tên</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td><div class="admin-user-name">{{ user.full_name }}</div></td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.role == 'admin' %}
+                                <span class="role-badge role-admin">Quản trị viên</span>
+                            {% elif user.role == 'lecturer' %}
+                                <span class="role-badge role-lecturer">Giảng viên</span>
+                            {% else %}
+                                <span class="role-badge role-student">Sinh viên</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_locked %}
+                                <span class="status-badge status-locked">Đã khóa</span>
+                            {% else %}
+                                <span class="status-badge status-active">Hoạt động</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.created_at or 'Chưa cập nhật' }}</td>
+                        <td>
+                            <div class="admin-actions">
+                                <button type="button" class="btn-edit"
+                                    onclick="openEditModal(
+                                        {{ user.id | tojson }},
+                                        {{ user.full_name | tojson }},
+                                        {{ user.email | tojson }},
+                                        {{ user.username | tojson }},
+                                        {{ user.role | tojson }}
+                                    )">
+                                    Sửa
+                                </button>
+
+                                {% if user.id != current_user.id %}
+                                <form action="{{ url_for('admin_toggle_lock', user_id=user.id) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('Xác nhận thay đổi trạng thái tài khoản này?')">
+                                    <button type="submit" class="btn-lock">
+                                        {% if user.is_locked %}Mở khóa{% else %}Khóa{% endif %}
+                                    </button>
+                                </form>
+
+                                <form action="{{ url_for('admin_delete_user', user_id=user.id) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('Bạn chắc chắn muốn xóa tài khoản {{ user.username }}? Thao tác này không thể hoàn tác.')">
+                                    <button type="submit" class="btn-delete">Xóa</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="admin-empty">Không tìm thấy tài khoản phù hợp.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<!-- Hộp thoại sửa tài khoản -->
+<dialog id="editModal" class="admin-modal">
+    <h2>✏️ Sửa tài khoản</h2>
+
+    <form id="editForm" method="POST" class="admin-form">
+        <label>Họ và tên
+            <input type="text" id="editFullName" name="full_name" maxlength="100" required>
+        </label>
+
+        <label>Email
+            <input type="email" id="editEmail" name="email" maxlength="254" required>
+        </label>
+
+        <label>Tên đăng nhập
+            <input type="text" id="editUsername" name="username"
+                   minlength="4" maxlength="30" pattern="[A-Za-z0-9_]+" required>
+        </label>
+
+        <label>Vai trò
+            <select id="editRole" name="role" required>
+                <option value="student">Sinh viên</option>
+                <option value="lecturer">Giảng viên</option>
+                <option value="admin">Quản trị viên</option>
+            </select>
+        </label>
+
+        <label>Mật khẩu mới (không bắt buộc)
+            <input type="password" name="password" minlength="8"
+                   placeholder="Để trống nếu không đổi">
+        </label>
+
+        <div class="admin-modal-actions">
+            <button type="submit" class="btn-add">Lưu thay đổi</button>
+            <button type="button" class="btn-cancel"
+                    onclick="document.getElementById('editModal').close()">
+                Hủy
+            </button>
+        </div>
+    </form>
+</dialog>
+
+<footer class="site-footer">
+    <p>© 2026 Thư viện tài liệu sinh viên</p>
+</footer>
+
+<script>
+    function openEditModal(id, fullName, email, username, role) {
+        const modal = document.getElementById("editModal");
+        const form = document.getElementById("editForm");
+
+        form.action = "/admin/users/" + encodeURIComponent(id) + "/edit";
+        document.getElementById("editFullName").value = fullName || "";
+        document.getElementById("editEmail").value = email || "";
+        document.getElementById("editUsername").value = username || "";
+        document.getElementById("editRole").value = role || "student";
+        form.querySelector('input[name="password"]').value = "";
+
+        modal.showModal();
+    }
+</script>
+</body>
+</html>
