@@ -22,6 +22,11 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 app = Flask(__name__)
 # Set FLASK_SECRET_KEY in hosting; this fallback is only for local development.
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "local-development-only-change-before-deploy"
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=os.environ.get("RENDER") == "true",
+)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_DIR)
 ALLOWED_EXTENSIONS = {"pdf", "docx"}
@@ -91,6 +96,27 @@ def init_db():
                 ON DELETE RESTRICT
         )
     """)
+    # Bootstrap admin from Render environment variables when provided.
+    admin_name = os.environ.get("ADMIN_FULL_NAME", "").strip()
+    admin_email = os.environ.get("ADMIN_EMAIL", "").strip().lower()
+    admin_username = os.environ.get("ADMIN_USERNAME", "").strip()
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    if admin_name and admin_email and admin_username and admin_password:
+        if valid_email(admin_email) and valid_username(admin_username) and len(admin_password) >= 12:
+            existing = conn.execute(
+                "SELECT id, username, email FROM users WHERE username=? OR email=?",
+                (admin_username, admin_email),
+            ).fetchone()
+            if existing is None:
+                conn.execute(
+                    "INSERT INTO users (full_name, email, username, password_hash, role, is_locked) VALUES (?, ?, ?, ?, 'admin', 0)",
+                    (admin_name, admin_email, admin_username, generate_password_hash(admin_password)),
+                )
+            elif existing["username"] == admin_username and existing["email"] == admin_email:
+                conn.execute(
+                    "UPDATE users SET full_name=?, role='admin', is_locked=0 WHERE id=?",
+                    (admin_name, existing["id"]),
+                )
     conn.commit()
     conn.close()
 # =====================================================
