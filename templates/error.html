@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ code|default(500) }} - Thư viện sinh viên</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .error-page {
+            max-width: 650px;
+            margin: 100px auto;
+            padding: 35px 25px;
+            text-align: center;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .error-code {
+            font-size: 64px;
+            font-weight: 800;
+            color: #2563eb;
+            margin: 0 0 15px;
+        }
+
+        .error-message {
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .error-link {
+            display: inline-block;
+            margin: 5px;
+            padding: 11px 18px;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+
+        .error-link:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <main class="error-page">
+        <h1 class="error-code">{{ code|default(500) }}</h1>
+
+        <h2>Đã xảy ra sự cố</h2>
+
+        <p class="error-message">
+            {{ message|default('Không thể xử lý yêu cầu của bạn.') }}
+        </p>
+
+        <a class="error-link" href="{{ url_for('home') }}">
+            Về trang chủ
+        </a>
+
+        <a class="error-link" href="{{ url_for('login') }}">
+            Đăng nhập
+        </a>
+    </main>
+</body>
+</html>
